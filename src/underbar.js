@@ -40,9 +40,9 @@
   _.last = function(array, n){
     if(n > array.length){
       return array;
-}else if (n === 0){
-  return [];
-}
+  } if(n === 0){
+    return [];
+  }
     return n === undefined ? array[array.length-1] : array.slice(n-1);
   };
 
@@ -52,6 +52,15 @@
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
+    if(Array.isArray(collection)){
+      for (var i = 0; i < collection.length; i++) {
+       iterator(collection[i], i, collection);
+      }
+    } else {
+      for (var key in collection){
+        iterator(collection[key], key, collection);
+      }
+    }
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
@@ -73,17 +82,46 @@
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
+    var result = [];
+    if (Array.isArray(collection)) {
+      for (var i = 0; i < collection.length; i++) {
+        if (test(collection[i])) {
+          result.push(collection[i]);
+        }
+      } 
+    }
+    return result;
   };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
+
+    // Take-away: "test" is considered as an arg (not a func) until it's passed
+    // thr.  So to re-use _.filter(), create an anonymous func below, so we
+    // can call !test(item)
+    return _.filter(collection, function(item){
+      return !test(item);
+    });
+    
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
-  };
+    //Use an obj to store a new array elemet as a unique key
+   var obj = {};
+    var result = [];
+
+    for (var i = 0; i < array.length; i++) {
+      // If array[i] is not an existing key in obj{}
+      if (!obj.hasOwnProperty(array[i])) {
+        obj[array[i]] = null;
+        result.push(array[i]);
+      }
+    }
+    return result;
+ };
 
 
   // Return the results of applying an iterator to each element.
@@ -91,6 +129,11 @@
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
+    var result = [];
+    _.each(collection, function(val, key, collection) {
+      result.push(iterator(val, key, collection));
+    });
+    return result;
   };
 
   /*
@@ -99,7 +142,7 @@
    * as an example of this.
    */
 
-  // Takes an array of objects and returns and array of the values of
+  // Takes an array of objects and returns an array of the values of
   // a certain property in it. E.g. take an array of people and return
   // an array of just their ages
   _.pluck = function(collection, key) {
