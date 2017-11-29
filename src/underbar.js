@@ -212,19 +212,42 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
-    return _.reduce(collection, function(isTrue, item) {
-      if (!isTrue) {
-        return false;
+    var result = true;
+    if (iterator !== undefined) {
+      for (var i = 0; i < collection.length; i++) {
+        if (!iterator(collection[i])) {
+          result = false;
+        }
       }
-  
-    }, true);
-  };
+      return result;
+    }
+    for (var i = 0; i < collection.length; i++) {
+      if (collection[i] === false) {
+        result = false;
+      }
+    }
+    return result;
+  };  
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
-  };
+    var result = false;
+    if (iterator !== undefined) {
+      for (var i = 0; i < collection.length; i++) {
+        if (iterator(collection[i])) {
+          result = true;
+        }
+      }
+      return result;
+    }
+    for (var i = 0; i < collection.length; i++) {
+      if (collection[i] === true) {
+        result = true;
+      }
+    }
+    return result;
+  };  
 
 
   /**
@@ -246,9 +269,12 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    // Outer _.each() loops thr every obj 
     _.each(arguments, function(item) {
+      // Inner _.each() loops thr every key-val pair inside each obj
       _.each(item, function(value, key) {
-        obj[key] === undefined && (obj[key] = value);
+        // WATCH the video 
+        //obj[key] === undefined && (obj[key] = value); 
         obj[key] = value;
       });
     });
@@ -307,6 +333,7 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -316,8 +343,22 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var args = _.map(arguments , item => item).slice(2);
+    setTimeout(function() {
+        func.apply(this,args);
+    }, wait);
   };
 
+/* 
+ if (arguments.length > 2){
+      var args = Array.prototype.slice.call(arguments);
+      setTimeout(func, wait, args.slice(2));
+      //setTimeout(func(args.slice(2)), wait);
+    } else {
+      setTimeout(func, wait);
+    }
+*/ 
+  
 
   /**
    * ADVANCED COLLECTION OPERATIONS
@@ -330,8 +371,20 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var newArray = array.slice();
+    var result = [];
+    for (var i = 0; i < newArray.length; i++) {
+      var randomIndex = getRandomInt(0, newArray.length);
+      result = array.slice(0, randomIndex).concat(array.slice(randomIndex + 1));
+      result.push(newArray[randomIndex]);
+    }
+    return result;
   };
-
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
 
   /**
    * ADVANCED

@@ -91,7 +91,7 @@
       });
 
       it('fails for a collection of all-falsy values', function() {
-        expect(_.every([true, '{}', 11], _.identity)).to.be.false;
+        expect(_.every([null, 0, undefined], _.identity)).to.be.false;
       });
 
       it('fails for a collection containing mixed falsy and truthy values', function() {
@@ -147,9 +147,7 @@
       });
 
       it('should fail for a set containing no matching values', function() {
-        // Replace this line with an `expect` statement that tests
-        // the behavior described by the `it` string
-        throw new Error('This test is missing.');
+        expect(_.some([1, 11, 29], isEven)).to.be.false;
       });
 
       it('should pass for a collection containing one matching value', function() {
